@@ -3,11 +3,13 @@ import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 import os
+import json
 
 app = Flask(__name__)
 
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
-creds = Credentials.from_service_account_file('credentials.json', scopes=SCOPES)
+creds_json = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
+creds = Credentials.from_service_account_info(creds_json, scopes=SCOPES)
 client = gspread.authorize(creds)
 
 SHEET_NAME = "Señales Trading"
@@ -26,6 +28,5 @@ def webhook():
     return {"status": "ok"}
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
