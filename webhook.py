@@ -12,8 +12,8 @@ creds_json = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
 creds = Credentials.from_service_account_info(creds_json, scopes=SCOPES)
 client = gspread.authorize(creds)
 
-SHEET_NAME = "Señales Trading"
-sheet = client.open(SHEET_NAME).sheet1
+SHEET_ID = "1ml2Va7PBgkjiDGvZvD-5pwC4WHEKmOblwGbJk04fV-c"
+sheet = client.open_by_key(SHEET_ID).sheet1
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
