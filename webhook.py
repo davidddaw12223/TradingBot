@@ -23,7 +23,12 @@ def webhook():
         str(datetime.now()),
         datos.get("ticker"),
         datos.get("action"),
-        datos.get("price")
+        datos.get("price"),
+        datos.get("volume"),
+        datos.get("stop_loss"),
+        datos.get("take_profit"),
+        datos.get("timeframe"),
+        datos.get("indicator")
     ])
     return {"status": "ok"}
 
