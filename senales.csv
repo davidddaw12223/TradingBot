@@ -1,0 +1,5 @@
+fecha,symbol,action,price;;;;
+2026-06-21 10:52:06.463838,EURUSD,BUY,1.1234;;;;
+Fecha;Símbolo;Acción;Precio;Timeframe
+21/06/2025 18:40;EURUSD;BUY;11.234;15m
+2026-06-21 18:17:10.650551,,compra,50000
