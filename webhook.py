@@ -1,7 +1,7 @@
 from flask import Flask, request
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import os
 import json
 
@@ -18,9 +18,9 @@ sheet = client.open_by_key(SHEET_ID).sheet1
 @app.route('/webhook', methods=['POST'])
 def webhook():
     datos = request.json
-    print("Señal recibida:", datos)
+    hora_espana = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M:%S")
     sheet.append_row([
-        str(datetime.now()),
+        hora_espana,
         datos.get("ticker"),
         datos.get("action"),
         datos.get("price"),
