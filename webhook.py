@@ -34,7 +34,7 @@ def webhook():
 
     if VPS_WEBHOOK_URL and datos.get("action") in ("compra", "venta"):
         try:
-            requests.post(VPS_WEBHOOK_URL, json={"action": datos.get("action")}, timeout=5)
+            requests.post(VPS_WEBHOOK_URL, json={"action": datos.get("action")}, timeout=15)
         except Exception as e:
             print(f"Error reenviando al VPS: {e}")
 
