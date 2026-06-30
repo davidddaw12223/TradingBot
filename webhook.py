@@ -4,16 +4,17 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime, timezone, timedelta
 import os
 import json
+import requests
 
 app = Flask(__name__)
-
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 creds_json = json.loads(os.environ.get('GOOGLE_CREDENTIALS'))
 creds = Credentials.from_service_account_info(creds_json, scopes=SCOPES)
 client = gspread.authorize(creds)
-
 SHEET_ID = "1ml2Va7PBgkjiDGvZvD-5pwC4WHEKmOblwGbJk04fV-c"
 sheet = client.open_by_key(SHEET_ID).sheet1
+
+VPS_WEBHOOK_URL = os.environ.get('VPS_WEBHOOK_URL')
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -30,6 +31,13 @@ def webhook():
         datos.get("timeframe"),
         datos.get("indicator")
     ])
+
+    if VPS_WEBHOOK_URL and datos.get("action") in ("compra", "venta"):
+        try:
+            requests.post(VPS_WEBHOOK_URL, json={"action": datos.get("action")}, timeout=5)
+        except Exception as e:
+            print(f"Error reenviando al VPS: {e}")
+
     return {"status": "ok"}
 
 if __name__ == "__main__":
