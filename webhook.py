@@ -13,13 +13,16 @@ creds = Credentials.from_service_account_info(creds_json, scopes=SCOPES)
 client = gspread.authorize(creds)
 SHEET_ID = "1ml2Va7PBgkjiDGvZvD-5pwC4WHEKmOblwGbJk04fV-c"
 sheet = client.open_by_key(SHEET_ID).sheet1
-
 VPS_WEBHOOK_URL = os.environ.get('VPS_WEBHOOK_URL')
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
     datos = request.json
     hora_espana = (datetime.now(timezone.utc) + timedelta(hours=2)).strftime("%d/%m/%Y %H:%M:%S")
+
+    ejecutar = str(datos.get("ejecutar", "no")).strip().lower()
+
+    # Siempre se registra en Sheets, pase lo que pase
     sheet.append_row([
         hora_espana,
         datos.get("ticker"),
@@ -29,10 +32,12 @@ def webhook():
         datos.get("stop_loss"),
         datos.get("take_profit"),
         datos.get("timeframe"),
-        datos.get("indicator")
+        datos.get("indicator"),
+        ejecutar
     ])
 
-    if VPS_WEBHOOK_URL and datos.get("action") in ("compra", "venta"):
+    # Solo se reenvía al VPS (y por tanto se ejecuta en IB) si "ejecutar" es "si"
+    if VPS_WEBHOOK_URL and datos.get("action") in ("compra", "venta") and ejecutar == "si":
         try:
             requests.post(VPS_WEBHOOK_URL, json={"action": datos.get("action")}, timeout=15)
         except Exception as e:
